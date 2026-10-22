@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+/*
+ * Surfaces are defined here as plain custom properties so the base layer and
+ * the utility classes read from a single source of truth.
+ *
+ * The palette is a deep, desaturated navy — matte and dark enough to keep
+ * off-white type at a high contrast ratio, but unmistakably blue.
+ */
+:root {
+  --background: #0d1b33;
+  --surface: #132540;
+  --surface-hover: #1a2e4d;
+  /* Glass scrims, tinted to the base hue so panels never read as grey. */
+  --scrim: rgb(13 27 51 / 0.32);
+  --scrim-strong: rgb(13 27 51 / 0.72);
+  /* Floating shapes — solid tones, never gradient stops. */
+  --orb-deep: #16315a;
+  --orb-light: #23508f;
+}
+
+@theme inline {
+  /* Typography */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-albert);
+
+  /* Palette — navy canvas, off-white type. */
+  --color-ink: var(--background);
+  --color-ink-raised: var(--surface);
+  --color-ink-hover: var(--surface-hover);
+  --color-ink-scrim: var(--scrim);
+  --color-ink-scrim-strong: var(--scrim-strong);
+  --color-orb-deep: var(--orb-deep);
+  --color-orb-light: var(--orb-light);
+  --color-paper: #f5f5f7;
+  --color-paper-dim: #8d95a6;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    background-color: var(--background);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--background);
+    color: #f5f5f7;
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: #f5f5f7;
+    color: var(--background);
+  }
+
+  :focus-visible {
+    outline: 1px solid rgb(255 255 255 / 0.5);
+    outline-offset: 4px;
+  }
+}
+
+/* Monochrome grain — luminance noise only, never colour. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------- FLOATING SHAPES */
+/* Solid fills and hairline outlines only — no gradient stops, no tinted
+   shadows. The drift is pure CSS so the layer costs no client JavaScript. */
+
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(7%, -9%, 0) scale(1.09);
+  }
+  66% {
+    transform: translate3d(-6%, 6%, 0) scale(0.93);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  40% {
+    transform: translate3d(-9%, 7%, 0) scale(0.92);
+  }
+  70% {
+    transform: translate3d(5%, -5%, 0) scale(1.11);
+  }
+}
+
+@keyframes drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.96);
+  }
+  50% {
+    transform: translate3d(11%, 10%, 0) scale(1.13);
+  }
+}
+
+@keyframes drift-d {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(-5%, 4%, 0) scale(1.07);
+  }
+  60% {
+    transform: translate3d(6%, -7%, 0) scale(0.95);
+  }
+}
+
+@keyframes drift-e {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.02);
+  }
+  45% {
+    transform: translate3d(8%, 6%, 0) scale(0.94);
+  }
+  80% {
+    transform: translate3d(-4%, -8%, 0) scale(1.08);
+  }
+}
+
+@keyframes shape-spin {
+  0% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(180deg) translate3d(3%, -4%, 0);
+  }
+  100% {
+    transform: rotate(360deg) translate3d(0, 0, 0);
+  }
+}
+
+@layer utilities {
+  .shape {
+    position: absolute;
+    will-change: transform;
+  }
+
+  .shape-drift-a {
+    animation: drift-a 46s ease-in-out infinite;
+  }
+  .shape-drift-b {
+    animation: drift-b 62s ease-in-out infinite;
+  }
+  .shape-drift-c {
+    animation: drift-c 54s ease-in-out infinite;
+  }
+  .shape-drift-d {
+    animation: drift-d 68s ease-in-out infinite;
+  }
+  .shape-drift-e {
+    animation: drift-e 58s ease-in-out infinite;
+  }
+  .shape-spin {
+    animation: shape-spin 96s linear infinite;
+  }
+}
+
+/* Unlayered, so it beats the layered utilities above regardless of order. */
+@media (prefers-reduced-motion: reduce) {
+  .shape,
+  .shape-drift-a,
+  .shape-drift-b,
+  .shape-drift-c,
+  .shape-drift-d,
+  .shape-drift-e,
+  .shape-spin {
+    animation: none !important;
+  }
+}
